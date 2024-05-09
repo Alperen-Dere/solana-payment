@@ -1,46 +1,61 @@
-const web3 = require('@solana/web3.js');
-const splToken = require('@solana/spl-token');
+// Write JavaScript Code
+const bs58 = require('bs58');
+const {
+    Connection,
+    Keypair,
+    PublicKey,
+    clusterApiUrl,
+} = require("@solana/web3.js");
+const fs = require('fs');
 
-async function sendUSDCMultiSend(senderKeypair, transfers) {
-    const connection = new web3.Connection(web3.clusterApiUrl('mainnet-beta'), 'confirmed');
-    const transaction = new web3.Transaction();
+const { getOrCreateAssociatedTokenAccount, transfer } = require("@solana/spl-token");
 
-    // Sender's USDC token account address
-    const senderTokenAccountAddress = new web3.PublicKey('7PRJF3eUnh9dpqMeUED6bNwZGfvysGNCmCoFREoC1PTX');
+const PRIVATE_KEY = ""; // Your private key in Base58 encoding
+// The address of the USDC token on Solana Devnet
+const USDC_DEV_PUBLIC_KEY = "4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU";
+// Convert the private key from Base58 to a byte array and create a Keypair
+const senderPrivateKeyBytes = bs58.decode(PRIVATE_KEY);
+const senderKeypair = Keypair.fromSecretKey(senderPrivateKeyBytes);
+// Create a new connection to the Solana Devnet
+const connection = new Connection(clusterApiUrl("mainnet-beta"), "confirmed");
 
-    for (let { recipientTokenAccountAddress, amount } of transfers) {
-        const recipientPublicKey = new web3.PublicKey(recipientTokenAccountAddress);
+// Read the rewards.json file
+const rewards = JSON.parse(fs.readFileSync('rewards.json', 'utf8'));
 
-        // Add the SPL Token transfer instruction to the transaction
-        transaction.add(
-            splToken.createTransferInstruction(
-                senderTokenAccountAddress, // Sender's token account address
-                recipientPublicKey, // Recipient's token account address
-                senderKeypair.publicKey, // Sender's wallet public key (authority)
-                amount, // Amount to send (in smallest unit of the token)
-                [], // Passing an empty array for multisig owners, since not used
-                splToken.TOKEN_PROGRAM_ID // Token program ID
-            )
+(async () => {
+    try {
+        // Fetch the sender's USDC token account
+        const senderTokenAccount = await getOrCreateAssociatedTokenAccount(
+            connection,
+            senderKeypair,
+            new PublicKey(USDC_DEV_PUBLIC_KEY),
+            senderKeypair.publicKey,
         );
+
+        for (let i = 0; i < rewards.length; i++) {
+            // Fetch or create the receiver's associated token account for USDC
+            const receiverTokenAccount = await getOrCreateAssociatedTokenAccount(
+                connection,
+                senderKeypair,
+                new PublicKey(USDC_DEV_PUBLIC_KEY),
+                new PublicKey(rewards[i].publicKey),
+                true, // Allow creating a token account for the receiver if it doesn't exist
+            );
+            // Perform the transfer
+            const signature = await transfer(
+                connection,
+                senderKeypair,
+                senderTokenAccount.address,
+                receiverTokenAccount.address,
+                senderKeypair.publicKey,
+                rewards[i].amount,
+            );
+            // Log the transaction signature and the receiver's address
+            console.log(`Transaction signature: ${signature}`);
+            console.log(`Sent to address: ${rewards[i].publicKey}`);
+            console.log(`You can verify the transaction on https://explorer.solana.com/tx/${signature}?cluster=devnet`);
+        }
+    } catch (error) {
+        console.error("Error performing the transfer:", error);
     }
-
-    // Sign and send the transaction
-    const signature = await web3.sendAndConfirmTransaction(
-        connection,
-        transaction,
-        [senderKeypair] // Only sender is required to sign
-    );
-
-    console.log(`Transaction successful with signature: ${signature}`);
-}
-
-// Example usage
-const secretKeyArray = Uint8Array.from([ ]);
-const senderKeypair = web3.Keypair.fromSecretKey(secretKeyArray);
-
-const transfers = [
-    { recipientTokenAccountAddress: 'CbnSGQyXNbN9VUNrPqVHwM9ExmSgvJh3U2kXZ5ZyTf5j', amount: 5000000 }, // for 5 USDC
-    { recipientTokenAccountAddress: '9mtjW4zcV8DcBJPY1u6fRZkXFVPZ1uv9qJtfeC4z4bjM', amount: 1000000 }  // for 1 USDC
-];
-
-sendUSDCMultiSend(senderKeypair, transfers);
+})();

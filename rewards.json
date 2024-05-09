@@ -1,6 +1,5 @@
-{
-    "CbnSGQyXNbN9VUNrPqVHwM9ExmSgvJh3U2kXZ5ZyTf5j": 0.5,
-    "9mtjW4zcV8DcBJPY1u6fRZkXFVPZ1uv9qJtfeC4z4bjM": 0.2,
-    "H3GhqPMwvGLdxWg3QJGjXDSkFSJCsF8KnKxixThnx7bY": 0.1
-}
-  
+[
+    { "publicKey": "5LFJcVi53JMwsHU8emv9zq5xFedMRE5TAx9Ue2ChtQfg", "amount": 10 },
+    { "publicKey": "6acxPv9QZLGtUjj7hSpDTew9293zJbKe2XF1kcSpsVdn", "amount": 20 },
+    { "publicKey": "HUYUQA3PsFYbUPFGgxagUV4zum4g3CL4Gm6RwbsTBy6i", "amount": 30 }
+]
