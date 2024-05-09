@@ -12,11 +12,11 @@ const { getOrCreateAssociatedTokenAccount, transfer } = require("@solana/spl-tok
 
 const PRIVATE_KEY = ""; // Your private key in Base58 encoding
 // The address of the USDC token on Solana Devnet
-const USDC_DEV_PUBLIC_KEY = "4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU";
+const USDC_DEV_PUBLIC_KEY = "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v";
 // Convert the private key from Base58 to a byte array and create a Keypair
 const senderPrivateKeyBytes = bs58.decode(PRIVATE_KEY);
 const senderKeypair = Keypair.fromSecretKey(senderPrivateKeyBytes);
-// Create a new connection to the Solana Devnet
+// Create a new connection to the Solana Mainnet
 const connection = new Connection(clusterApiUrl("mainnet-beta"), "confirmed");
 
 // Read the rewards.json file
@@ -48,7 +48,7 @@ const rewards = JSON.parse(fs.readFileSync('rewards.json', 'utf8'));
                 senderTokenAccount.address,
                 receiverTokenAccount.address,
                 senderKeypair.publicKey,
-                rewards[i].amount,
+                rewards[i].amount * 1_000_000, // Multiply the amount by 1,000,000
             );
             // Log the transaction signature and the receiver's address
             console.log(`Transaction signature: ${signature}`);

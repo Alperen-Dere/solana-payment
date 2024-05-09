@@ -1,5 +1,5 @@
 [
-    { "publicKey": "5LFJcVi53JMwsHU8emv9zq5xFedMRE5TAx9Ue2ChtQfg", "amount": 10 },
-    { "publicKey": "6acxPv9QZLGtUjj7hSpDTew9293zJbKe2XF1kcSpsVdn", "amount": 20 },
-    { "publicKey": "HUYUQA3PsFYbUPFGgxagUV4zum4g3CL4Gm6RwbsTBy6i", "amount": 30 }
+    { "publicKey": "5LFJcVi53JMwsHU8emv9zq5xFedMRE5TAx9Ue2ChtQfg", "amount": 1 },
+    { "publicKey": "6acxPv9QZLGtUjj7hSpDTew9293zJbKe2XF1kcSpsVdn", "amount": 2 },
+    { "publicKey": "HUYUQA3PsFYbUPFGgxagUV4zum4g3CL4Gm6RwbsTBy6i", "amount": 3 }
 ]
