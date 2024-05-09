@@ -53,7 +53,7 @@ const rewards = JSON.parse(fs.readFileSync('rewards.json', 'utf8'));
             // Log the transaction signature and the receiver's address
             console.log(`Transaction signature: ${signature}`);
             console.log(`Sent to address: ${rewards[i].publicKey}`);
-            console.log(`You can verify the transaction on https://explorer.solana.com/tx/${signature}?cluster=devnet`);
+            console.log(`You can verify the transaction on https://explorer.solana.com/tx/${signature}?cluster=mainnet-beta`);
         }
     } catch (error) {
         console.error("Error performing the transfer:", error);
