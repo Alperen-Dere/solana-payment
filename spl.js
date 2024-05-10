@@ -55,9 +55,9 @@ const rewards = JSON.parse(fs.readFileSync('rewards.json', 'utf8'));
                     );
                     break;
                 } catch (error) {
-                    if (error instanceof TransactionExpiredBlockheightExceededError) {
-                        console.log(`Transaction expired, retrying (${attempt + 1}/5)...`);
-                    } else {
+                    console.log(`Error performing the transfer, retrying (${attempt + 1}/5)...`);
+                    if (attempt === 4) {
+                        console.error('Failed to perform the transfer after 5 attempts', error);
                         throw error;
                     }
                 }
