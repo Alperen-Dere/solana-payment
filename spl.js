@@ -42,14 +42,26 @@ const rewards = JSON.parse(fs.readFileSync('rewards.json', 'utf8'));
                 true, // Allow creating a token account for the receiver if it doesn't exist
             );
             // Perform the transfer
-            const signature = await transfer(
-                connection,
-                senderKeypair,
-                senderTokenAccount.address,
-                receiverTokenAccount.address,
-                senderKeypair.publicKey,
-                rewards[i].amount * 1_000_000, // Multiply the amount by 1,000,000
-            );
+            let signature;
+            for (let attempt = 0; attempt < 5; attempt++) {
+                try {
+                    signature = await transfer(
+                        connection,
+                        senderKeypair,
+                        senderTokenAccount.address,
+                        receiverTokenAccount.address,
+                        senderKeypair.publicKey,
+                        rewards[i].amount * 1_000_000,
+                    );
+                    break;
+                } catch (error) {
+                    if (error instanceof TransactionExpiredBlockheightExceededError) {
+                        console.log(`Transaction expired, retrying (${attempt + 1}/5)...`);
+                    } else {
+                        throw error;
+                    }
+                }
+            }
             // Log the transaction signature and the receiver's address
             console.log(`Transaction signature: ${signature}`);
             console.log(`Sent to address: ${rewards[i].publicKey}`);
